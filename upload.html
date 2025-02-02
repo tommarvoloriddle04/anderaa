@@ -7,23 +7,32 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f0f0f0;
+            background-color: #121212;
+            color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            flex-direction: column;
         }
+
         .container {
-            background: white;
+            background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+
         input[type="file"] {
-            margin: 15px 0;
+            margin: 10px 0;
+            padding: 10px;
+            background: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 5px;
         }
+
         .button {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -31,72 +40,26 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1em;
         }
+
         .button:hover {
-          background-color: #45a049;
+            background-color: #45a049;
+        }
+
+        #status {
+            margin-top: 15px;
+            color: lightgreen;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Upload Your File</h2>
-        <input type="file" id="fileInput" />
-        <br>
-        <button class="button" onclick="uploadFile()">Upload File</button>
+        <h2>Upload Your Files</h2>
+        <input type="file" id="fileInput" multiple>
+        <button class="button" onclick="uploadFiles()">Upload</button>
+        <p id="status"></p>
     </div>
 
-    <script>
-        const GITHUB_API_URL = 'https://api.github.com/repos/tommarvoloriddle04/anderaa/contents/uploads';
-        const GITHUB_TOKEN = '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';
-
-        function uploadFile() {
-            const fileInput = document.getElementById('fileInput');
-            const file = fileInput.files[0];
-
-            if (!file) {
-                alert("Please select a file to upload.");
-                return;
-            }
-
-            if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                alert("File size exceeds 10MB limit.");
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const content = event.target.result.split(',')[1]; // Convert to Base64
-
-                fetch(`${GITHUB_API_URL}/${file.name}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${GITHUB_TOKEN}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Upload ${file.name}`,
-                        content: content
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.content) {
-                        alert("✅ File uploaded successfully!");
-                    } else {
-                        console.error(data);
-                        alert("❌ Failed to upload file.");
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert("⚠️ An error occurred during the upload.");
-                });
-            };
-
-            reader.readAsDataURL(file);
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
-
