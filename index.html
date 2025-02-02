@@ -11,21 +11,16 @@
             height: 100%;
             overflow: hidden;
             font-family: Arial, sans-serif;
-            background: black;
-            color: white;
         }
 
         #backgroundVideo {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -1;
-    pointer-events: none;  /* Prevents accidental clicks */
-}
-
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
         }
 
         .auth, .content {
@@ -33,10 +28,11 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.6);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
+            color: white;
         }
 
         .button {
@@ -64,20 +60,23 @@
     </style>
 </head>
 <body>
-   <video autoplay muted loop playsinline id="backgroundVideo">
-    <source src="background.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
+    <!-- Background Video -->
+    <video autoplay muted loop id="backgroundVideo">
+        <source src="background.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
+    <!-- Authentication Section -->
     <div class="auth" id="authSection">
         <h2>Enter Passcode</h2>
         <input type="password" id="passcode" placeholder="Enter Passcode">
         <button class="button" onclick="checkPasscode()">Submit</button>
     </div>
 
+    <!-- Main Content (hidden initially) -->
     <div class="content" id="mainContent" style="display: none;">
         <button class="button" onclick="window.location.href='upload.html'">Upload Files</button>
-        <button class="button" onclick="window.location.href='view.html'">View Files</button>
+        <button class="button" onclick="window.location.href='show-files.html'">View Files</button>
     </div>
 
     <script>
