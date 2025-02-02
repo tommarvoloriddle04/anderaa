@@ -5,34 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Files</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background: #f4f4f4;
+        body {
             font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-
-        h1 {
-            color: #333;
-        }
-
         .container {
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
-
         input[type="file"] {
             margin: 15px 0;
         }
-
         .button {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -40,77 +31,72 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 1em;
         }
-
         .button:hover {
             background-color: #45a049;
-        }
-
-        .message {
-            margin-top: 10px;
-            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Upload Files</h1>
-        <input type="file" id="fileInput" multiple>
-        <button class="button" onclick="uploadFiles()">Upload file</button>
-        <p class="message" id="message"></p>
-        <button class="button" onclick="window.location.href='index.html'">Back to Home</button>
+        <h2>Upload Your File</h2>
+        <input type="file" id="fileInput" />
+        <br>
+        <button class="button" onclick="uploadFile()">Upload File</button>
     </div>
 
     <script>
         const GITHUB_API_URL = 'https://api.github.com/repos/tommarvoloriddle04/anderaa/contents/uploads';
         const GITHUB_TOKEN = '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';
 
-        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+        function uploadFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
 
-        async function uploadFiles() {
-            const files = document.getElementById('fileInput').files;
-            const messageElement = document.getElementById('message');
-
-            if (files.length === 0) {
-                messageElement.textContent = 'Please select files to upload.';
+            if (!file) {
+                alert("Please select a file to upload.");
                 return;
             }
 
-            for (const file of files) {
-                if (file.size > MAX_FILE_SIZE) {
-                    messageElement.textContent = `File ${file.name} exceeds 10MB limit.`;
-                    return;
-                }
-
-                const reader = new FileReader();
-                reader.onloadend = async () => {
-                    const content = btoa(reader.result);
-                    try {
-                        const response = await fetch(`${GITHUB_API_URL}/${file.name}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                message: `Upload ${file.name}`,
-                                content: content
-                            })
-                        });
-
-                        if (response.ok) {
-                            messageElement.textContent = `${file.name} uploaded successfully.`;
-                        } else {
-                            const errorData = await response.json();
-                            messageElement.textContent = `Error uploading ${file.name}: ${errorData.message}`;
-                        }
-                    } catch (error) {
-                        messageElement.textContent = `Network error uploading ${file.name}.`;
-                    }
-                };
-                reader.readAsBinaryString(file);
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                alert("File size exceeds 10MB limit.");
+                return;
             }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const content = event.target.result.split(',')[1]; // Convert to Base64
+
+                fetch(`${GITHUB_API_URL}/${file.name}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${GITHUB_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Upload ${file.name}`,
+                        content: content
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.content) {
+                        alert("✅ File uploaded successfully!");
+                    } else {
+                        console.error(data);
+                        alert("❌ Failed to upload file.");
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("⚠️ An error occurred during the upload.");
+                });
+            };
+
+            reader.readAsDataURL(file);
         }
     </script>
 </body>
 </html>
+
